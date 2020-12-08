@@ -1,0 +1,24 @@
+from PyQt5.QtCore import pyqtSignal, QThread
+
+from service.music.NeteaseMusic import NeteaseMusic
+
+
+class getSong(QThread):
+
+    song_url = pyqtSignal(int, str, dict)
+
+    def __init__(self, music_id):
+        super(getSong, self).__init__()
+        self.music_id = music_id
+
+    def run(self):
+        try:
+            music = NeteaseMusic()
+            code, music_url = music.get_music(self.music_id)
+            print('Thread:', self.music_id)
+            _, music_info = music.get_music_info(self.music_id)
+            print('Status code:', code)
+            print('Thread:', music_info)
+            self.song_url.emit(code, music_url, music_info)
+        except Exception as e:
+            print(e)

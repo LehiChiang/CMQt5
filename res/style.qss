@@ -1,0 +1,180 @@
+/*全局样式*/
+*{
+    font-family:Century Gothic;
+}
+QLabel#content{
+    font-size:15px;
+    font-family:Century Gothic;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: white;
+    width: 6px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: qlineargradient(x1:0,
+    y1: 0,
+    x2: 1,
+    y2: 0,
+    stop: 0 rgb(154, 193, 253),
+    stop: 0.5 rgb(154, 193, 253),
+    stop: 1 rgb(154, 193, 253));
+    min-height: 0px;
+    border-radius: 2px;
+    width: 6px;
+}
+
+QScrollBar::add-line:vertical {
+    background: qlineargradient(x1:0,
+    y1: 0,
+    x2: 1,
+    y2: 0,
+    stop: 0 rgb(154, 193, 253),
+    stop: 0.5 rgb(154, 193, 253),
+    stop: 1 rgb(154, 193, 253));
+    height: 0px;
+    width: 6px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    background: qlineargradient(x1:0,
+    y1: 0,
+    x2: 1,
+    y2: 0,
+    stop: 0 rgb(154, 193, 253),
+    stop: 0.5 rgb(154, 193, 253),
+    stop: 1 rgb(154, 193, 253));
+    height: 0px;
+    width: 6px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+
+/*AppBar样式*/
+QWidget#app_bar {
+    background: #418AE4;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+/*上方的三个按钮*/
+QToolButton#left_close, QToolButton#left_visit, QToolButton#left_mini {
+    padding-left: 12px;
+    border-radius: 1px;
+}
+QToolButton#left_close:hover, QToolButton#left_visit:hover, QToolButton#left_mini:hover {
+    color: white;
+}
+
+/*下方最左侧功能区*/
+QWidget#outer_left_widget {
+    background: #ECF1FA !important;
+    border-right: 1px solid lightgrey;
+    /*border-bottom-left-radius: 5px;*/
+}
+QWidget#nav_bar{
+    border-top: 1px solid lightgrey;
+    background: #ECF1FA !important;
+}
+
+
+QTabWidget::pane {
+    border: none;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+QTabBar::tab {
+    padding: 2px 2px;
+    color: #585c5d;
+    font-size: 14px;
+    font-family: 黑体;
+    min-width:24ex;
+    min-height: 8ex;
+    border: 0!important;
+    border-top-left-radius: 10px!important;
+    border-top-right-radius: 10px!important;
+    background: rgba(222,222,222,.4);
+}
+QTabBar::tab:hover {
+    background: #6861ce;
+    color:#fff !important;
+}
+QTabBar::tab:selected {
+    background: #6861ce;
+    color:#fff !important;
+}
+
+/*Outer List的样式*/
+QListWidget#fun{
+    outline: 0px;
+    background-color:transparent;
+    border:none;
+}
+QListWidget#fun::Item{
+    margin: 7px 0px;
+    background: none;
+    border: none;
+}
+QListWidget#fun::Item:hover{
+    color: #418AE4;
+    cursor: pointer;
+}
+QListWidget#fun::Item:selected {
+    color: #418AE4;
+    cursor: pointer;
+}
+QListWidget#fun::item:selected:!active{
+    color: #418AE4;
+}
+
+
+QProgressBar{
+    text-align: center;
+    color: rgb(255, 85, 0);
+    border:1px solid #6861ce;
+    border-radius: 6px;
+}
+QProgressBar::chunk{
+    background:#6861ce;
+}
+
+
+QComboBox{
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-size: 17px;
+    border-color: #202940;
+    padding: 3px;
+}
+QComboBox:focus{
+   border-color: #3e93ff;
+   border-radius:5px;
+}
+QComboBox::drop-down{
+
+    border-left: 1px solid #ffffff;
+}
+QComboBox::down-arrow {
+    height:60px;
+    width:20px;
+}
+QComboBox QAbstractItemView {
+    outline: 0px;
+    background-color:transparent;
+    border:1px solid #202940;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+    padding: 3px 7px;
+    height:60px;
+}

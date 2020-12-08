@@ -1,0 +1,82 @@
+{
+  "id":2,
+  "name": "QQ我爱的音乐",
+  "description": "aaaaaaaa",
+  "create_time": "8484984894",
+  "play_num": 0,
+  "music_count": 0,
+  "songs": [
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    },
+    {
+      "song_id": 51515684,
+      "song_name": "失恋阵线联盟",
+      "song_author": "草蜢",
+      "song_album": "失恋",
+      "url": "",
+      "local_url": "",
+      "song_size": 5484494
+    }
+  ]
+}
