@@ -52,13 +52,12 @@ class MusicListPage(QScrollArea):
         self.item_layout.addWidget(CMListButton('QQ音乐', 'fa.download', clicked=self.show_no_dialog))
         self.item_layout.addWidget(CMListButton('酷狗音乐', 'fa5.star', clicked=self.show_no_dialog))
 
-        self.item_layout.addWidget(CMListButton('已播放', 'fa.list',
-                                              clicked=lambda: self.MusicPageLayout.music_stack.setCurrentIndex(2)))
-
         self.list = os.listdir('config/playlist')
         song_list_item = QVBoxLayout()
         song_list_item.setContentsMargins(0, 0, 0, 0)
         song_list_box = CMCollapsibleBox("创建的歌单")
+        song_list_item.addWidget(CMListButton('已播放', 'fa.list',
+                                              clicked=lambda: self.MusicPageLayout.music_stack.setCurrentIndex(2)))
         for list in self.list:
             print("加载歌单：" + list)
             song_list_item.addWidget(CMListButton(list.split('.')[0], 'fa.list'))

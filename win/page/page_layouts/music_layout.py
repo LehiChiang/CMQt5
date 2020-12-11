@@ -1,5 +1,5 @@
 import requests
-from PyQt5.QtCore import QUrl, QSize, Qt, QPoint
+from PyQt5.QtCore import QUrl, Qt, QPoint
 from PyQt5.QtGui import QImage, QPixmap, QCursor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QVBoxLayout, QStackedWidget, QHBoxLayout, QWidget, QMessageBox, QMenu, QAction
@@ -8,7 +8,7 @@ from qtawesome import icon
 from thread.music.Netease.getSongThread import getSong
 from win.CM.CMRichPanel import CMRichPanel
 from win.generator.centerlize import centerlize
-from win.generator.scaled_image import get_scaled_image
+from win.generator.scaled_image import get_scaled_image, get_fixed_image
 from win.page.component.music.music_navigation_bar import MusicPlayer
 from win.page.component.music.netease.netease_music_panel import NeteaseMusicSearchedPanel
 from win.page.component.music.play_list_panel import PlayListPanel
@@ -34,11 +34,12 @@ class MusicPageLayout(QVBoxLayout):
         self.music_player.playlist.currentIndexChanged.connect(self.do_currentChanged)
 
         self.netease_panel = NeteaseMusicSearchedPanel()
-        self.netease_panel.music_result_list.doubleClicked.connect(self.playClickedMusic)
+        self.netease_panel.music_result_list.doubleClicked.connect(self.play_clicked_music)
+        self.netease_panel.music_result_list.customContextMenuRequested[QPoint].connect(self.music_search_list_popup_context)
 
         self.current_play_list = PlayListPanel('播放历史', '您播放过的音乐')
-        self.current_play_list.music_play_list.doubleClicked.connect(self.playClickedMusic)
-        self.current_play_list.music_play_list.customContextMenuRequested[QPoint].connect(self.myListWidgetContext)
+        self.current_play_list.music_play_list.doubleClicked.connect(self.play_clicked_music)
+        self.current_play_list.music_play_list.customContextMenuRequested[QPoint].connect(self.playlist_popup_context)
 
         # 添加到stack
         self.music_stack.addWidget(MusicPage())
@@ -57,15 +58,18 @@ class MusicPageLayout(QVBoxLayout):
         self.addWidget(self.music_stack)
         self.addWidget(music_widget)
 
-    def playClickedMusic(self):
-        # print('当前行：', self.netease_panel.music_result_list.currentRow())
+    def play_clicked_music(self):
+        """
+        播放点击的音乐
+        :return:
+        """
         try:
             music_id = self.sender().selectedItems()[0].whatsThis()
             if music_id not in self.current_play_list.song_ids:
                 self.current_play_list.song_ids.insert(0, music_id)
-                print(self.current_play_list.song_ids)
+                print('当前播放列表：', self.current_play_list.song_ids)
                 self.getSongThread = getSong(music_id)
-                self.getSongThread.song_url.connect(self.updateMusicPlayer)
+                self.getSongThread.song_url.connect(self.update_music_player)
                 self.getSongThread.start()
             else:
                 self.music_player.currentMusicId = music_id
@@ -90,7 +94,7 @@ class MusicPageLayout(QVBoxLayout):
         except Exception as e:
             print(e)
 
-    def updateMusicPlayer(self, code, music_url, music_info):
+    def update_music_player(self, music_id, music_url, music_info):
         """
         更新播放器
         :param music_id:
@@ -99,8 +103,7 @@ class MusicPageLayout(QVBoxLayout):
         :return:
         """
         try:
-            if code == 200:
-                print(music_url)
+            if music_url:
                 music = {}
                 music['id'] = music_info['id']
                 music['album'] = music_info['al']['name']
@@ -110,24 +113,13 @@ class MusicPageLayout(QVBoxLayout):
                 music['artist'] = artist_name[:-1]
                 music['name'] = music_info['name']
                 music['pic'] = music_info['al']['picUrl']
-                self.current_play_list.music_play_list.add_Music_Tile(music)
-
-                req = requests.get(music['pic'])
-                photo = QPixmap()
-                photo.loadFromData(req.content)
-                photo = photo.scaled(60, 60, Qt.IgnoreAspectRatio)
-                self.music_player.music_pic.resize(60, 60)
-                self.music_player.music_pic.setPixmap(photo)
-                self.music_player.music_window_title.setText(music['name'])
-                self.music_player.music_window_author.setText(music['artist'])
-
+                self.current_play_list.music_play_list.add_music_tile(music)
                 self.music_player.playlist.insertMedia(0, QMediaContent(QUrl(music_url)))
                 self.music_player.playlist.setCurrentIndex(0)
                 self.current_play_list.music_play_list.setCurrentRow(0)
-                print(self.music_player.player.isAvailable())
                 if self.music_player.player.isAvailable() == False:
                     print('音乐暂时无法播放')
-                    QMessageBox.warning(self, '出错啦', '音乐暂时无法播放', QMessageBox.Yes, QMessageBox.Yes)
+                    QMessageBox.warning(self.music_stack, '出错啦', '音乐暂时无法播放', QMessageBox.Yes, QMessageBox.Yes)
                 self.music_player.player.play()
                 if not self.music_player.play_button.isChecked():
                     self.music_player.player.play()
@@ -136,7 +128,8 @@ class MusicPageLayout(QVBoxLayout):
                     self.music_player.play_button.setToolTip('暂停')
             else:
                 print('音乐暂时无法播放')
-                QMessageBox.warning(self, '出错啦', '音乐暂时无法播放', QMessageBox.Yes, QMessageBox.Yes)
+                self.current_play_list.song_ids.remove(music_id)
+                QMessageBox.warning(self.music_stack, '出错啦', '音乐暂时无法播放', QMessageBox.Yes, QMessageBox.Yes)
 
         except Exception as e:
             print(e)
@@ -153,9 +146,14 @@ class MusicPageLayout(QVBoxLayout):
             self.music_player.play_button.setIcon(icon('mdi.play', color='#fff'))
             self.music_player.play_button.setToolTip('播放')
 
-    def myListWidgetContext(self, point: QPoint):
+    def playlist_popup_context(self, point: QPoint):
+        """
+        播放列表的右键菜单
+        :param point:
+        :return:
+        """
         item = self.current_play_list.music_play_list.itemAt(point.x(), point.y())
-        if item!=None:
+        if item:
             popMenu = QMenu()
             deleteAction = QAction(u'删除', self)
             deleteAction.setIcon(icon('mdi.trash-can-outline'))
@@ -165,10 +163,43 @@ class MusicPageLayout(QVBoxLayout):
             popMenu.addAction(QAction(u'修改', self))
             popMenu.exec_(QCursor.pos())
 
+    def music_search_list_popup_context(self, point: QPoint):
+        """
+        音乐搜索结果的右键菜单
+        :param point:
+        :return:
+        """
+        item = self.netease_panel.music_result_list.itemAt(point.x(), point.y())
+        if item:
+            popmenu = QMenu()
+            add_play_action = QAction(u'添加到播放列表', self)
+            add_play_action.setIcon(icon('mdi.playlist-plus'))
+            add_play_action.triggered.connect(self.add_music_action)
+
+            download_music_action = QAction(u'下载', self)
+            download_music_action.setIcon(icon('mdi.download'))
+            download_music_action.triggered.connect(self.download_music_action)
+
+            popmenu.addAction(add_play_action)
+            popmenu.addSeparator()
+            popmenu.addAction(download_music_action)
+            popmenu.exec_(QCursor.pos())
+
+    def add_music_action(self):
+        print('hello')
+
+    def download_music_action(self):
+        print('download')
+
     def delete_action(self):
+        """
+        删除音乐项
+        :return:
+        """
         pos = self.current_play_list.music_play_list.currentRow()
         item = self.current_play_list.music_play_list.currentItem()
         self.current_play_list.music_play_list.takeItem(self.current_play_list.music_play_list.row(item))
+        self.current_play_list.song_ids.remove(item.whatsThis())
         if self.music_player.playlist.currentIndex() == pos:
             nextPos = 0
             if pos >= 1:
@@ -188,18 +219,58 @@ class MusicPageLayout(QVBoxLayout):
             self.music_player.playlist.removeMedia(pos)
 
     def do_currentChanged(self):
+        """
+        播放列表切换时触发的事件
+        :return:
+        """
         newindex = self.music_player.playlist.currentIndex()
+        self.getSongThread = getSong(self.current_play_list.song_ids[newindex])
+        self.getSongThread.song_url.connect(self.update_music_windonw_tile)
+        self.getSongThread.start()
         self.current_play_list.music_play_list.setCurrentRow(newindex)
 
+    def update_music_windonw_tile(self, music_id, music_url, music_info):
+        """
+        更新音乐的海报窗口
+        :return:
+        """
+        if music_url:
+            music = {}
+            music['id'] = music_info['id']
+            music['album'] = music_info['al']['name']
+            artist_name = ''
+            for artist in music_info['ar']:
+                artist_name = artist_name + str(artist['name']) + '/'
+            music['artist'] = artist_name[:-1]
+            music['name'] = music_info['name']
+            music['pic'] = music_info['al']['picUrl']
+            req = requests.get(music['pic'])
+            photo = QPixmap()
+            photo.loadFromData(req.content)
+            photo = photo.scaled(60, 60, Qt.IgnoreAspectRatio)
+            self.music_player.music_pic.resize(60, 60)
+            self.music_player.music_pic.setPixmap(photo)
+            self.music_player.music_window_title.setText(music['name'])
+            self.music_player.music_window_author.setText(music['artist'])
+
     def next_music(self):
+        """
+        前一首歌切换
+        :return:
+        """
         self.music_player.playlist.next()
         newindex = self.music_player.playlist.currentIndex()
         self.current_play_list.music_play_list.setCurrentRow(newindex)
 
     def previous_music(self):
+        """
+        下一首歌切换
+        :return:
+        """
         self.music_player.playlist.previous()
         newindex = self.music_player.playlist.currentIndex()
         self.current_play_list.music_play_list.setCurrentRow(newindex)
+
 
 class MusicPage(CMRichPanel):
     """

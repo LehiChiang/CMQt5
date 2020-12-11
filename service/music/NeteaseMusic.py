@@ -54,7 +54,7 @@ class NeteaseMusic:
         :return: 歌曲的URL
         """
         res = requests.get(self.base_url + '/music/url?id={}'.format(music_id))
-        print(res.url)
+        print('Service-get_music[res]:', res.url)
         data = json.loads(res.text)
         return data['code'], data['data'][0]['url']
 

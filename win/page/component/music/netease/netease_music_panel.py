@@ -1,4 +1,5 @@
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QFontMetrics
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QApplication, QListWidget, \
     QListWidgetItem, QGridLayout, QAbstractItemView
 
@@ -16,10 +17,57 @@ style = """
 """
 
 
+def get_music_list_title():
+    wight = QWidget()
+    layout_main = QGridLayout()
+    album_label = QLabel()
+    album_label.setText('专辑')
+    album_label.setStyleSheet('color: #418AE4;')
+    album_label.setObjectName('music_album_label')
+
+    artist_label = QLabel()
+    artist_label.setText('歌手')
+    artist_label.setStyleSheet('color: #418AE4;')
+    artist_label.setObjectName('music_artist_label')
+
+    name_label = QLabel()
+    name_label.setText('歌曲名')
+    name_label.setStyleSheet('color: #418AE4;')
+    name_label.setObjectName('music_name_label')
+
+    layout_main.addWidget(name_label, 1, 1, 1, 5)
+    layout_main.addWidget(artist_label, 1, 6, 1, 5)
+    layout_main.addWidget(album_label, 1, 10, 1, 5)
+    wight.setLayout(layout_main)
+    return wight
+
+
+def get_item_widget(album, artist, name):
+    layout_main = QGridLayout()
+    wight = QWidget()
+    album_label = QLabel()
+    album_label.setObjectName('music_album_label')
+    album_label.setText(QFontMetrics(album_label.font()).elidedText(album, Qt.ElideRight, 160))
+    album_label.setToolTip(album)
+
+    artist_label = QLabel()
+    artist_label.setObjectName('music_artist_label')
+    artist_label.setText(QFontMetrics(artist_label.font()).elidedText(artist, Qt.ElideRight, 160))
+    artist_label.setToolTip(artist)
+
+    name_label = QLabel()
+    name_label.setObjectName('music_name_label')
+    name_label.setText(QFontMetrics(name_label.font()).elidedText(name, Qt.ElideRight, 160))
+    name_label.setToolTip(name)
+
+    layout_main.addWidget(name_label, 1, 1, 1, 5)
+    layout_main.addWidget(artist_label, 1, 6, 1, 5)
+    layout_main.addWidget(album_label, 1, 10, 1, 5)
+    wight.setLayout(layout_main)
+    return wight
+
+
 class NeteaseMusicSearchedPanel(QWidget):
-    """
-    title, subTitle, centerWidget
-    """
 
     def __init__(self, parent=None):
         super(NeteaseMusicSearchedPanel, self).__init__(parent)
@@ -46,7 +94,7 @@ class NeteaseMusicSearchedPanel(QWidget):
         self.vbox.addWidget(self.title)
         self.vbox.addWidget(self.subTitle)
         self.vbox.addLayout(self.hbox)
-        self.vbox.addWidget(self.get_music_list_title())
+        self.vbox.addWidget(get_music_list_title())
         self.vbox.addWidget(self.music_result_list)
 
     def search_action(self):
@@ -59,34 +107,6 @@ class NeteaseMusicSearchedPanel(QWidget):
             self.music_result_list.set_music_list(music_list)
         except Exception as e:
             print(e)
-
-    def get_music_list_title(self):
-        wight = QWidget()
-        self.layout_main = QGridLayout()
-        album_label = QLabel()
-        album_label.setText('专辑')
-        album_label.setStyleSheet('color: #418AE4;')
-        album_label.setObjectName('music_album_label')
-
-        artist_label = QLabel()
-        artist_label.setText('歌手')
-        artist_label.setStyleSheet('color: #418AE4;')
-        artist_label.setObjectName('music_artist_label')
-
-        id_label = QLabel()
-        id_label.setText(str(id))
-        id_label.setObjectName('music_id_label')
-
-        name_label = QLabel()
-        name_label.setText('歌曲名')
-        name_label.setStyleSheet('color: #418AE4;')
-        name_label.setObjectName('music_name_label')
-
-        self.layout_main.addWidget(name_label, 1, 1, 1, 5)
-        self.layout_main.addWidget(artist_label, 1, 6, 1, 5)
-        self.layout_main.addWidget(album_label, 1, 10, 1, 5)
-        wight.setLayout(self.layout_main)
-        return wight
 
 
 class MusicResultList(QListWidget):
@@ -115,9 +135,9 @@ class MusicResultList(QListWidget):
         self.setObjectName('music_list')
         self.setStyleSheet(self.css)
         self.setFont(QFont('黑体', 11))
-        # self.setMinimumHeight(240)
         self.setViewMode(QListWidget.ListMode)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setContextMenuPolicy(3)
 
     def set_music_list(self, music_list):
         self.music_list = music_list
@@ -129,35 +149,7 @@ class MusicResultList(QListWidget):
             item = QListWidgetItem()
             item.setWhatsThis(str(music['id']))
             self.addItem(item)
-            self.setItemWidget(item, self.get_Item_Widget(music['album'], music['artist'], music['id'], music['name']))
-
-    def get_Item_Widget(self, album, artist, id, name):
-        wight = QWidget()
-        self.layout_main = QGridLayout()
-        album_label = QLabel()
-        album_label.setText(album)
-        album_label.setWordWrap(True)
-        album_label.setObjectName('music_album_label')
-
-        artist_label = QLabel()
-        artist_label.setText(artist)
-        artist_label.setWordWrap(True)
-        artist_label.setObjectName('music_artist_label')
-
-        id_label = QLabel()
-        id_label.setText(str(id))
-        id_label.setObjectName('music_id_label')
-
-        name_label = QLabel()
-        name_label.setText(name)
-        name_label.setWordWrap(True)
-        name_label.setObjectName('music_name_label')
-
-        self.layout_main.addWidget(name_label, 1, 1, 1, 5)
-        self.layout_main.addWidget(artist_label, 1, 6, 1, 5)
-        self.layout_main.addWidget(album_label, 1, 10, 1, 5)
-        wight.setLayout(self.layout_main)
-        return wight
+            self.setItemWidget(item, get_item_widget(music['album'], music['artist'], music['name']))
 
 
 if __name__ == "__main__":
