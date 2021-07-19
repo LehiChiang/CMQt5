@@ -1,14 +1,15 @@
+import json
 from sys import argv, exit
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QDesktopWidget, QVBoxLayout, QMainWindow, QHBoxLayout, \
-    QStackedWidget
+    QStackedWidget, QMessageBox
 from PyQt5.QtGui import QIcon, QCursor, QMouseEvent
 from qtawesome import icon
 
 from service.CommomHelper import CommonHelper
 from win.CM.CMInputBox import CMInputBox
-from win.CM.CMMessageBox import CMMessageBox
 from win.page.basic.blank import BlankPage
+from win.page.component.splash_page import SplashPanel
 
 from win.page.component.button_group import TopRightButtonGroup
 from win.page.component.outer_list import OuterPanel
@@ -31,14 +32,14 @@ class MainWindow(QMainWindow):
         self.winHeight = desktop.height()
         self.screenWidth = self.winWidth * self.widthRatio
         self.screenHeight = self.winHeight * self.heightRatio
-        self.initAppBar()
+        # self.initAppBar()
         self.initCenterWidget()
         self.initUI()
 
         # self.main_layout.addWidget(self.appbar)
         self.main_layout.addLayout(self.stackLayout)
 
-    def initAppBar(self):
+    def init_app_bar(self):
         self.appbar = QWidget()
         self.appbar.setFixedHeight(60)
         self.appbar_main_layout = QHBoxLayout(self.appbar)
@@ -69,9 +70,10 @@ class MainWindow(QMainWindow):
         # 添加stack
         self.main_stack = QStackedWidget(self.outer_list_panel)
         self.main_stack.addWidget(BlankPage(HomePageLayout()))
-        self.main_stack.addWidget(SplitterPage(QVBoxLayout(), ChartPageLayout()))
-        self.musicpagelayout = MusicPageLayout()
-        self.main_stack.addWidget(SplitterPage(MusicListPageLayout(self.musicpagelayout), self.musicpagelayout))
+        # self.main_stack.addWidget(SplitterPage(QVBoxLayout(), ChartPageLayout()))
+        music_play_list = json.load(open('config/playlist/playlist.json', 'r', encoding='utf-8'))
+        self.musicpagelayout = MusicPageLayout(music_play_list)
+        self.main_stack.addWidget(SplitterPage(MusicListPageLayout(self.musicpagelayout, music_play_list), self.musicpagelayout))
         self.main_stack.addWidget(BlankPage(SettingPageLayout()))
 
         # 下方主体为水平布局
@@ -98,10 +100,16 @@ class MainWindow(QMainWindow):
         self.main_stack.setCurrentIndex(i)
 
     def closeEvent(self, event):
-        reply = CMMessageBox.question(self, '消息',
-                                      "你确定要退出吗？", CMMessageBox.Yes |
-                                      CMMessageBox.No, CMMessageBox.No)
-        if reply == CMMessageBox.Yes:
+        # close = CMMessageBox('消息', "你确定要退出吗？")
+        # close.exec_()
+        # print(close.close_button.isChecked())
+        # if close.close_button.isChecked():
+        #     print(close.close_button.isChecked())
+        #     event.accept()
+        # else:
+        #     event.ignore()
+        signal = QMessageBox.question(self, '消息', "你确定要退出吗？", QMessageBox.Yes|QMessageBox.No, QMessageBox.No)
+        if signal == QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
@@ -143,11 +151,15 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(argv)
+    splash = SplashPanel()
     app.setApplicationDisplayName('CM工具箱')
     app.setApplicationVersion('1.0.1')
+    app.processEvents()
     win = MainWindow()
     styleFile = 'res/style.qss'
     qssStyle = CommonHelper.readQss(styleFile)
     win.show()
     win.setStyleSheet(qssStyle)
+    splash.finish(win)
+    splash.deleteLater()
     exit(app.exec_())

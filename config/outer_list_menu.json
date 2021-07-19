@@ -6,11 +6,6 @@
       "icon_active": "mdi.home"
     },
     {
-      "tooltip": "绘制",
-      "icon": "mdi.chart-bubble",
-      "icon_active": "mdi.chart-bubble"
-    },
-    {
       "tooltip": "音乐",
       "icon": "mdi.music",
       "icon_active": "mdi.music"

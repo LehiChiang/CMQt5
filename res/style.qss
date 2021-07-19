@@ -125,11 +125,9 @@ QListWidget#fun::Item{
 }
 QListWidget#fun::Item:hover{
     color: #418AE4;
-    cursor: pointer;
 }
 QListWidget#fun::Item:selected {
     color: #418AE4;
-    cursor: pointer;
 }
 QListWidget#fun::item:selected:!active{
     color: #418AE4;

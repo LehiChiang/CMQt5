@@ -1,5 +1,3 @@
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QVBoxLayout, QScrollArea, QWidget, QApplication, QLabel
@@ -17,9 +15,9 @@ class MusicListPageLayout(QVBoxLayout):
     音乐页面列表的内容layout，传入page
     """
 
-    def __init__(self, MusicPageLayout):
+    def __init__(self, MusicPageLayout, music_play_list):
         super(MusicListPageLayout, self).__init__()
-        self.addWidget(MusicListPage(MusicPageLayout))
+        self.addWidget(MusicListPage(MusicPageLayout, music_play_list))
         self.setContentsMargins(0, 0, 0, 0)
 
 
@@ -28,7 +26,7 @@ class MusicListPage(QScrollArea):
     音乐页面列表的内容
     """
 
-    def __init__(self, MusicPageLayout):
+    def __init__(self, MusicPageLayout, music_play_list):
         super(MusicListPage, self).__init__()
         self.MusicPageLayout = MusicPageLayout
 
@@ -52,15 +50,15 @@ class MusicListPage(QScrollArea):
         self.item_layout.addWidget(CMListButton('QQ音乐', 'fa.download', clicked=self.show_no_dialog))
         self.item_layout.addWidget(CMListButton('酷狗音乐', 'fa5.star', clicked=self.show_no_dialog))
 
-        self.list = os.listdir('config/playlist')
         song_list_item = QVBoxLayout()
         song_list_item.setContentsMargins(0, 0, 0, 0)
-        song_list_box = CMCollapsibleBox("创建的歌单")
-        song_list_item.addWidget(CMListButton('已播放', 'fa.list',
-                                              clicked=lambda: self.MusicPageLayout.music_stack.setCurrentIndex(2)))
-        for list in self.list:
-            print("加载歌单：" + list)
-            song_list_item.addWidget(CMListButton(list.split('.')[0], 'fa.list'))
+        song_list_box = CMCollapsibleBox("我的歌单")
+
+        self.song_playlist = music_play_list
+        for index, playlist in enumerate(self.song_playlist):
+            print("加载歌单：" + playlist['list_name'])
+            song_list_item.addWidget(CMListButton(playlist['list_name'], 'fa.list',
+                                                  clicked=lambda: self.MusicPageLayout.music_stack.setCurrentIndex(2)))
         song_list_box.setContentLayout(song_list_item)
         self.item_layout.addWidget(song_list_box)
         self.item_layout.addStretch()

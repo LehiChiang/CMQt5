@@ -39,7 +39,7 @@ class CMInputBox(QLineEdit):
                 border: none;
                 line-height: 11px;
                 border-radius: 4px;
-                background: rgb(103,103,103,45);
+                background: rgba(103,103,103,45);
             }
             #lineedit:focus{
                 border: 1px solid #ebebeb;

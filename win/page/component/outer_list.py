@@ -1,5 +1,5 @@
 import json
-from PyQt5.QtCore import Qt, QSize, QModelIndex
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QListView, QVBoxLayout, QToolButton
 from qtawesome import icon
 

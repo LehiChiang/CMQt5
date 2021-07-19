@@ -20,7 +20,7 @@ class PlayListPanel(QWidget):
         super(PlayListPanel, self).__init__(parent)
 
         # 最上方
-        self.title = QLabel('歌单-'+listname, font=QFont('黑体', 20, weight=QFont.Bold))
+        self.title = QLabel(listname, font=QFont('黑体', 20, weight=QFont.Bold))
         self.subTitle = QLabel(description, font=QFont('黑体', 12))
         self.subTitle.setObjectName('tabsublabel')
         self.subTitle.setStyleSheet(style)

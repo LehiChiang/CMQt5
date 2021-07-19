@@ -83,7 +83,6 @@ class MusicPlayer(QWidget):
         self.playlist_btn.setObjectName('playlist_btn')
         self.playlist_btn.setStyleSheet('#playlist_btn{border: none; background-color: none;}')
         self.playlist_btn.setCursor(QCursor(Qt.PointingHandCursor))
-        self.playlist_btn.clicked.connect(self.playlist_switch)
         self.playlist_btn.setToolTip('打开播放列表')
 
         self.navbar_main_layout.addWidget(self.previous_button)
@@ -138,15 +137,6 @@ class MusicPlayer(QWidget):
             self.mute_btn.setChecked(False)
             self.mute_btn.setIcon(icon('mdi.volume-high', color='#418AE4'))
             self.mute_btn.setToolTip('静音')
-
-    def playlist_switch(self):
-
-        if self.playlist_btn.isChecked():
-            self.playlist_btn.setIcon(icon('mdi.playlist-music', color='#418AE4'))
-            self.playlist_btn.setToolTip('关闭播放列表')
-        else:
-            self.playlist_btn.setIcon(icon('mdi.playlist-music-outline', color='#6F6F6F'))
-            self.playlist_btn.setToolTip('打开播放列表')
 
     def do_positionChanged(self, position):
         secs = position/1000

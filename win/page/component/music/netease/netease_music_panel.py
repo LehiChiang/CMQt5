@@ -35,14 +35,20 @@ def get_music_list_title():
     name_label.setStyleSheet('color: #418AE4;')
     name_label.setObjectName('music_name_label')
 
+    duration_label = QLabel()
+    duration_label.setObjectName('music_duration_label')
+    duration_label.setText('时长')
+    duration_label.setStyleSheet('color: #418AE4;')
+
     layout_main.addWidget(name_label, 1, 1, 1, 5)
     layout_main.addWidget(artist_label, 1, 6, 1, 5)
     layout_main.addWidget(album_label, 1, 10, 1, 5)
+    layout_main.addWidget(duration_label, 1, 15, 1, 2)
     wight.setLayout(layout_main)
     return wight
 
 
-def get_item_widget(album, artist, name):
+def get_item_widget(album, artist, name, duration):
     layout_main = QGridLayout()
     wight = QWidget()
     album_label = QLabel()
@@ -60,9 +66,15 @@ def get_item_widget(album, artist, name):
     name_label.setText(QFontMetrics(name_label.font()).elidedText(name, Qt.ElideRight, 160))
     name_label.setToolTip(name)
 
+    duration_label = QLabel()
+    duration_label.setObjectName('music_duration_label')
+    duration_label.setText(duration)
+    duration_label.setToolTip(duration)
+
     layout_main.addWidget(name_label, 1, 1, 1, 5)
     layout_main.addWidget(artist_label, 1, 6, 1, 5)
     layout_main.addWidget(album_label, 1, 10, 1, 5)
+    layout_main.addWidget(duration_label, 1, 15, 1, 2)
     wight.setLayout(layout_main)
     return wight
 
@@ -116,7 +128,7 @@ class MusicResultList(QListWidget):
         self.css = """
             QListWidget#music_list{
                  outline: 0px;
-                 background-color:transparent;
+                 alternate-background-color: rgb(255, 255, 255);
                  border: none;
             }
             QListWidget#music_list::Item{
@@ -125,11 +137,14 @@ class MusicResultList(QListWidget):
                  background: none;
             }
             QListWidget#music_list::Item:hover{
-                background: skyblue;
+                background: rgb(240, 241, 241);
             }
             QListWidget#music_list::Item:selected {
-                background: skyblue;
+                background: rgb(240, 241, 241);
                 color: #fff;
+            }
+            QListView#music_list::item:!alternate:!selected{
+                background: rgb(249, 249, 249);
             }
         """
         self.setObjectName('music_list')
@@ -138,6 +153,7 @@ class MusicResultList(QListWidget):
         self.setViewMode(QListWidget.ListMode)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setContextMenuPolicy(3)
+        self.setAlternatingRowColors(True)
 
     def set_music_list(self, music_list):
         self.music_list = music_list
@@ -149,7 +165,7 @@ class MusicResultList(QListWidget):
             item = QListWidgetItem()
             item.setWhatsThis(str(music['id']))
             self.addItem(item)
-            self.setItemWidget(item, get_item_widget(music['album'], music['artist'], music['name']))
+            self.setItemWidget(item, get_item_widget(music['album'], music['artist'], music['name'], music['duration']))
 
 
 if __name__ == "__main__":

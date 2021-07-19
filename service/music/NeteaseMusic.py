@@ -26,15 +26,18 @@ class NeteaseMusic:
         song_list = html['result']['songs']
         simplified_song_list = []
         for song in song_list:
-            simplified_song = {}
-            simplified_song['id'] = song['id']
-            simplified_song['name'] = song['name']
+            simplified_song = {'id': song['id'], 'name': song['name'], 'album': song['album']['name']}
 
             artist_name = ''
             for artist in song['artists']:
                 artist_name = artist_name + str(artist['name']) + '/'
             simplified_song['artist'] = artist_name[:-1]
-            simplified_song['album'] = song['album']['name']
+
+            secs = song['duration'] / 1000
+            mins = secs / 60
+            secs = secs % 60
+            simplified_song['duration'] = "%d:%d" % (mins, secs)
+
             simplified_song_list.append(simplified_song)
 
         return simplified_song_list
@@ -54,7 +57,7 @@ class NeteaseMusic:
         :return: 歌曲的URL
         """
         res = requests.get(self.base_url + '/music/url?id={}'.format(music_id))
-        print('Service-get_music[res]:', res.url)
+        # print('Service-get_music[res]:', res.url)
         data = json.loads(res.text)
         return data['code'], data['data'][0]['url']
 
@@ -65,6 +68,7 @@ class NeteaseMusic:
         :return: 歌曲信息
         """
         res = requests.get(self.base_url + '/song/detail?ids={}'.format(music_id))
+        # print('Service-get_music_info[res]:', res.url)
         data = json.loads(res.text)
         return data['code'], data['songs'][0]
 
